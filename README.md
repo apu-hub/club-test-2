@@ -1,23 +1,42 @@
-
 [![HTTP PHP Logo](https://i.ibb.co/9gZ7KhX/logo-03.png)](http://github.com/apu-hub/http-php/)
 
 It's a simple HTTP request handling library, written in PHP.
 build on top of PHP 7.4.12 .
 
+## Quick Start
+
+download exapmle with libary from [here](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/apu-hub/http-php/tree/main/examples).
+
+or
+
+download the latest version of the [library](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/apu-hub/http-php/tree/main/dist).
+
+```php
+require_once 'PATH_OF_LIBRARY/http.php';
+
+$app = new Http();
+
+$app->get('/', function (Request $request, Response $response) {
+    $response->send('Hello World!');
+});
+```
+
 ## documentation:
 
-- Routing
+- [Routing](#routing)
   - [Routes](#routes)
   - [Router](#router)
-- Request
+- [Request](#request)
   - [Body](#body)
   - [Query](#query)
   - [Params](#params)
-- Response
+- [Response](#response)
   - [Status](#status)
   - [Send](#send)
   - [json](#json)
-  - [Render](#render)
+  - [View](#view)
+
+# Routing
 
 ## Routes
 
@@ -27,6 +46,9 @@ get, post, put, delete, route.
 
 ```php
 // $app->get('/path', function());
+// $app->post('/path', function());
+// $app->put('/path', function());
+// $app->delete('/path', function());
 $app->get('/', function (Request $request, Response $response) {
     $response->send('Hello World!');
 });
@@ -52,8 +74,22 @@ $app->get('/items', function ($uri) {
     $items->get('/', function ($uri) {
         $items->send('Sending all items');
     });
+    $items->get('/:id', function ($uri) {
+        $items->send('send item');
+    });
+    $items->post('/:id', function ($uri) {
+        $items->send('create item');
+    });
+    $items->put('/:id', function ($uri) {
+        $items->send('update item');
+    });
+    $items->delete('/:id', function ($uri) {
+        $items->send('delete item');
+    });
 });
 ```
+
+# Request
 
 ## Body
 
@@ -61,7 +97,8 @@ $app->get('/items', function ($uri) {
 // body(); returns the body of the request as a array
 // body('key'); returns the value of the key
 $app->get('/', function (Request $request, Response $response) {
-    $response->json($request->body());
+    $body = $request->body();
+    $response->json($body);
 });
 ```
 
@@ -74,7 +111,8 @@ $app->get('/', function (Request $request, Response $response) {
 // query(); returns the query of the request as a array
 // query('key'); returns the value of the key
 $app->get('/', function (Request $request, Response $response) {
-    $response->json($request->query());
+    $query = $request->query();
+    $response->json($query);
 });
 ```
 
@@ -87,9 +125,12 @@ $app->get('/', function (Request $request, Response $response) {
 // params(); returns the params of the request as a array
 // params('key'); returns the value of the key
 $app->get('/:key', function (Request $request, Response $response) {
-    $response->json($request->params());
+    $params = $request->params();
+    $response->json($params);
 });
 ```
+
+# Response
 
 ## Send
 
@@ -105,13 +146,14 @@ $app->get('/', function (Request $request, Response $response) {
 // jsson(); array as input
 // json(); returns the body to client as json
 $app->get('/', function (Request $request, Response $response) {
-    $response->json(['key' => 'value']);
+    $body = ['key' => 'value'];
+    $response->json($body);
 });
 ```
 
-## Render
+## View
 
-This function is usefull to render a view. [sample file](sample_file_location/) for view.
+This function is usefull to render a view. [sample file](https://github.com/apu-hub/http-php/tree/main/examples/views) for views. file path reference use `views/footer.html` instead of `views\footer.html`. [list of special php characters](https://stackoverflow.com/questions/16431280/list-of-special-php-characters#answer-16431310)
 
 ```php
 $app->get('/page1', function (Request $request, Response $response) {
@@ -123,8 +165,8 @@ $app->get('/page1', function (Request $request, Response $response) {
     $data = ["page_title" => "Page 1",
              "page_content" => "Content of page 1"];
 
-    // render([templates_path_array], [data_array])
-    $response->render($templates, $data);
+    // view([templates_path_array], [data_array])
+    $response->view($templates, $data);
 });
 ```
 
